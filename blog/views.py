@@ -5,12 +5,27 @@ from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django .core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 
 def post_index(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("published_date")
-    return render(request, "blog/post_index.html", {"posts" : posts})
+    paginator = Paginator(posts, 4)
+    page = request.GET.get('page')
+    # request.GET is a dictionary with GET parameters/variables/query string (every thing after the ? is the query string)
+    # .get() is used for dictionaries to retrieve the value of the variable/item.{item : value}, {"page": 3}
+    # it's saying "get the value with the GET variable named 'page'"
+    try:
+        post_list = paginator.page(page)
+            # paginator.page() returns the paginated results of a page as an argument
+    except PageNotAnInteger:
+            # If page is not an integer deliver the first page
+        post_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range deliver last page of results
+        post_list = paginator.page(paginator.num_pages)
+    return render(request, "blog/post_index.html", {"posts": posts, "page": page, "post_list": post_list})
 
 
 def post_detail(request, pk):

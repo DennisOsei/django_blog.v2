@@ -17,11 +17,9 @@
           {{ u_form|crispy }}
           {{ p_form|crispy }}
       </fieldset>
-      {% if post.author == request.user %}
       <div class="form-group">
           <button class="btn btn-outline-info" type="submit">Update</button>
       </div>
-      {% endif %}
   </form>
   </div>
 {% endblock %}
