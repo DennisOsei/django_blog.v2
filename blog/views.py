@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect,HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment
 from django.utils import timezone
 from .forms import PostForm
@@ -6,11 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django .core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth.models import User
 
 
 
 def post_index(request):
-    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("published_date")
+    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("-published_date")
     paginator = Paginator(posts, 4)
     page = request.GET.get('page')
     # request.GET is a dictionary with GET parameters/variables/query string (every thing after the ? is the query string)
@@ -75,3 +76,18 @@ def post_delete(request, pk):
         return redirect("post_index")
     else:
         return render(request, "blog/post_confirm_delete.html", {"post" : post})
+
+
+@login_required
+def user_posts(request, username):
+    user = get_object_or_404(User, username=username)
+    posts = Post.objects.filter(published_date__lte=timezone.now(), author=user).order_by("-published_date")
+    paginator = Paginator(posts, 4)
+    page = request.GET.get('page')
+    try:
+        post_list = paginator.page(page)
+    except PageNotAnInteger:
+        post_list = paginator.page(1)
+    except EmptyPage:
+        post_list = paginator.page(paginator.num_pages)
+    return render(request, "blog/user_posts.html", {"posts" : posts, "user" : user, "post_list" : post_list, "page" : page})
