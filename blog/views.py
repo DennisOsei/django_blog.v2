@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment
 from django.utils import timezone
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django .core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 
 
 
@@ -29,10 +30,30 @@ def post_index(request):
     return render(request, "blog/post_index.html", {"posts": posts, "page": page, "post_list": post_list})
 
 
+@login_required
+def post_likes(request, pk):
+    post = get_object_or_404(Post, id=request.POST.get("post_id"))
+    liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+    return HttpResponseRedirect(reverse('post_detail', args=[str(pk)]))
+
+
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comment = post.comments.filter(approved_comment=True)
-    return render(request, "blog/post_detail.html", {"post" : post, "comment" : comment})
+    liked_post = get_object_or_404(Post, pk=pk)
+    num_of_likes = liked_post.num_of_likes()
+    liked = False
+    if liked_post.likes.filter(id=request.user.id).exists():
+        liked = True
+    else:
+        liked = False
+    return render(request, "blog/post_detail.html", {"post" : post, "comment" : comment, "num_of_likes" : num_of_likes, "liked" : liked})
 
 
 @login_required
@@ -91,3 +112,19 @@ def user_posts(request, username):
     except EmptyPage:
         post_list = paginator.page(paginator.num_pages)
     return render(request, "blog/user_posts.html", {"posts" : posts, "user" : user, "post_list" : post_list, "page" : page})
+
+
+@login_required
+def comment_create(request,pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.approved_comment = True
+            comment.post = post           # Assigning post to comment
+            comment.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = CommentForm()
+    return render(request, "blog/comment_create.html", {'form': form})
