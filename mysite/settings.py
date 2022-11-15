@@ -142,12 +142,12 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "dennisoseitimss1@gmail.com"
-EMAIL_HOST_PASSWORD = "hwbflluphoifghzz"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
-AWS_ACCESS_KEY_ID="AKIAVB3NM5NKCB2LO6YC"
-AWS_SECRET_ACCESS_KEY="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"
-AWS_STORAGE_BUCKET_NAME="django-blog-media-files"
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
 
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
