@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "blog.apps.BlogConfig",
     "users.apps.UsersConfig",
     "crispy_forms",
+    "storages"
+
 ]
 
 MIDDLEWARE = [
@@ -140,5 +142,13 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
+EMAIL_HOST_USER = "dennisoseitimss1@gmail.com"
+EMAIL_HOST_PASSWORD = "hwbflluphoifghzz"
+
+AWS_ACCESS_KEY_ID="AKIAVB3NM5NKCB2LO6YC"
+AWS_SECRET_ACCESS_KEY="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"
+AWS_STORAGE_BUCKET_NAME="django-blog-media-files"
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
