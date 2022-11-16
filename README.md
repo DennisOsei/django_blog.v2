@@ -4,9 +4,9 @@ Django Blog Project built with Python and Django and Deployed to Heroku. Also co
 
 1. Clone repo 
 
-2. Create venv: "python -m venv venv"
+2. Create virtual environment: "python -m venv venv"
 
-3. Activate the venv: "source venv/bin/activate"
+3. Activate the virtual environment: "source venv/bin/activate"
 
 4. Run "python -m pip install --upgrade pip" to upgrade pip
 
